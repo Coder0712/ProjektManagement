@@ -1,0 +1,35 @@
+services:
+  projectmanagement.api:
+    image: project_management_api:latest
+    container_name: ProjectManagement-API
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DatabaseOptions__ConnectionString=Server=db;Port=5432;Database=${API_DB};Username=${DB_USER};Password=${DB_PASSWORD}
+      - ASPNETCORE_URLS=http://+:8080
+    restart: unless-stopped
+
+  db:
+    image: postgres:latest
+    container_name: ProjectManagement-DB
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${API_DB}
+    volumes:
+      - project-management-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${API_DB}"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  project-management-db:
+
+
