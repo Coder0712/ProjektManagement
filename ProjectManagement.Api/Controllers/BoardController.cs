@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectManagement.Api.Contracts.Boards;
 using ProjectManagement.Api.Contracts.Groups;
@@ -11,6 +12,7 @@ namespace ProjectManagement.Controllers
     /// Controller for the board endpoints.
     /// </summary>
     [Route("")]
+    [Authorize(Roles = "user")]
     [ApiController]
     public sealed class BoardController : ControllerBase
     {

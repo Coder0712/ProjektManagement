@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectManagement.Api.Contracts.Projects;
 using ProjectManagement.Application.Interfaces;
@@ -12,6 +13,7 @@ namespace ProjectManagement.Controllers
     /// Controller for the project endpoints.
     /// </summary>
     [Route("")]
+    [Authorize(Roles = "user")]
     [ApiController]
     public sealed class ProjectController : ControllerBase
     {

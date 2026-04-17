@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectManagement.Api.Contracts.Cards;
 using ProjectManagement.Application.Interfaces;
@@ -11,6 +12,7 @@ namespace ProjectManagement.Controllers
     /// Controller for the card endpoints.
     /// </summary>
     [Route("")]
+    [Authorize(Roles = "user")]
     [ApiController]
     public sealed class CardController : ControllerBase
     {

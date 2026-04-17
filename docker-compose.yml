@@ -7,8 +7,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      keycloakdb:
+        condition: service_healthy
     environment:
-      - DatabaseOptions__ConnectionString=Server=db;Port=5432;Database=${API_DB};Username=${DB_USER};Password=${DB_PASSWORD}
+      - DatabaseOptions__ConnectionString=Server=db;Port=5432;Database=project;Username=test;Password=test
+      - AuthenticationOptions__Authority=http://Project_Management_Keycloak:8080/realms/myrealm
+      - AuthenticationOptions__ClaimIssuer=http://localhost:8081/realms/myrealm
+      - AuthenticationOptions__MetadataAddress=http://Project_Management_Keycloak:8080/realms/myrealm/.well-known/openid-configuration
+      - AuthenticationOptions__RequireHttpsMetadata=false
+      - AuthenticationOptions__ClientId=project-management
       - ASPNETCORE_URLS=http://+:8080
     restart: unless-stopped
 
@@ -18,18 +25,54 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${API_DB}
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=project
     volumes:
       - project-management-db:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${API_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U test -d project"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: Project_Management_Keycloak
+    ports:
+      - "8081:8080"
+    depends_on:
+      keycloakdb:
+        condition: service_healthy
+    environment:
+      - KC_DB=postgres
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+      - KC_DB_URL=jdbc:postgresql://Keycloak_db:5432/keycloakdb
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ["start-dev"]
+    restart: unless-stopped
+
+  keycloakdb:
+    image: postgres:latest
+    container_name: Keycloak_db
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+      - POSTGRES_DB=keycloakdb
+    volumes:
+      - keycloak-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloakdb"]
       interval: 5s
       retries: 10
     restart: unless-stopped
 
 volumes:
   project-management-db:
+  keycloak-db:
 
 

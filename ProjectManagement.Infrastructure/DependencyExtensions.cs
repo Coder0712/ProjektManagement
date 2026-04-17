@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using ProjectManagement.Domain.Boards;
 using ProjectManagement.Domain.Cards;
 using ProjectManagement.Domain.Common;
@@ -38,6 +40,7 @@ namespace ProjectManagement.Infrastructure
             services.AddScoped<ICardRepository, CardRepository>();
             services.AddScoped<IBoardProjectUniquessChecker, BoardProjectUniquessChecker>();
             services.AddScoped<IProjectTitleUniquenessChecker, ProjectTitleUniquenessChecker>();
+            services.AddAuth(configuration);
 
             return services;
         }
@@ -67,6 +70,36 @@ namespace ProjectManagement.Infrastructure
             optionsSetup.Configure(option);
 
             return option.ConnectionString;
+        }
+
+        private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+        {
+            var authOptions = new AuthenticationOptions();
+
+            var optionsSetup = new AuthenticationOptionsSetup(configuration);
+
+            optionsSetup.Configure(authOptions);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.MapInboundClaims = false;
+                        options.Authority = authOptions.Authority;
+                        options.ClaimsIssuer = authOptions.ClaimIssuer;
+                        options.MetadataAddress = authOptions.MetadataAddress;
+                        options.Audience = authOptions.ClientId;
+                        options.RequireHttpsMetadata = authOptions.RequireHttpsMetadata;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidIssuer = options.ClaimsIssuer,
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidAudience = authOptions.ClientId,
+                            RoleClaimType = "roles"
+                        };
+                    });
+
+            return services;
         }
     }
 }
