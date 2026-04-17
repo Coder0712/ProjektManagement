@@ -1,7 +1,7 @@
 ﻿namespace ProjectManagement.Api.Contracts.Boards
 {
     /// <summary>
-    /// Represents a request to update a kanban board.
+    /// Represents a request to update a board.
     /// </summary>
     public sealed record UpdateBoardRequst
     {

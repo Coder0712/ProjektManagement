@@ -1,7 +1,7 @@
 ﻿namespace ProjectManagement.Api.Contracts.Boards
 {
     /// <summary>
-    /// Represents a request to create a kanban board
+    /// Represents a request to create a board
     /// </summary>
     public sealed record CreateBoardRequest
     {

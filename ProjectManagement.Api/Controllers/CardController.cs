@@ -41,6 +41,8 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/cards")]
         [HttpPost]
         [ProducesResponseType(typeof(CreateCardResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCard([FromBody] CreateCardRequest request)
         {
             var result = await _createValidator.ValidateAsync(request);
@@ -82,11 +84,15 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/cards")]
         [HttpGet]
         [ProducesResponseType(typeof(GetAllCardsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllCards()
         {
             var allCards = await _cardService.GetAllCardsAsync();
 
-            return Ok(new GetAllCardsResponse { Cards = allCards.Value });
+            return Ok(new GetAllCardsResponse
+            { 
+                Cards = allCards.Value
+            });
         }
 
         /// <summary>
@@ -97,6 +103,8 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/cards/{id}")]
         [HttpGet]
         [ProducesResponseType(typeof(GetCardByIdResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCardById([FromRoute] Guid id)
         {
             var cardResult = await _cardService.GetCardbyIdAsync(id);
@@ -110,7 +118,10 @@ namespace ProjectManagement.Controllers
                     "Card could not be found.");
             }
 
-            return Ok(cardResult.Value);
+            return Ok(new GetCardByIdResponse
+            { 
+                Card = cardResult.Value
+            });
         }
 
         /// <summary>
@@ -122,6 +133,9 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/cards/{id}")]
         [HttpPatch]
         [ProducesResponseType(typeof(UpdateCardResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateCard(
             [FromRoute] Guid id,
             [FromBody] UpdateCardRequest request)
@@ -143,7 +157,7 @@ namespace ProjectManagement.Controllers
             {
                 cardStatus = Enum.Parse<CardStatus>(request.Status.ToString(), true);
             }
-            
+
             var cardResult = await _cardService.UpdateCard(
                 id,
                 request.Title,
@@ -172,7 +186,10 @@ namespace ProjectManagement.Controllers
                 }
             }
 
-            return Ok(cardResult.Value);
+            return Ok(new UpdateCardResponse
+            { 
+                Card = cardResult.Value
+            });
         }
 
         /// <summary>
@@ -183,6 +200,8 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/cards/{id}")]
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteCardById([FromRoute] Guid id)
         {
             var cardResult = await _cardService.DeleteCard(id);
@@ -208,6 +227,8 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/cards/{id}/move")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> MoveCard(
             [FromBody] MoveCardRequest request,
             [FromRoute] Guid id)

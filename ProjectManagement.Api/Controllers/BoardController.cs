@@ -19,15 +19,21 @@ namespace ProjectManagement.Controllers
         private readonly IBoardService _boardService;
         private readonly IValidator<CreateBoardRequest> _validator;
         private readonly IValidator<UpdateBoardRequst> _updateValidator;
+        private readonly IValidator<CreateGroupRequest> _createGroupValidator;
+        private readonly IValidator<UpdateGroupRequest> _updateGroupRequestValidator;
 
         public BoardController(
             IBoardService boardService,
             IValidator<CreateBoardRequest> validator,
-            IValidator<UpdateBoardRequst> updateValidator)
+            IValidator<UpdateBoardRequst> updateValidator,
+            IValidator<CreateGroupRequest> createGroupValidator,
+            IValidator<UpdateGroupRequest> updateGroupRequestValidator)
         {
             _boardService = boardService;
             _validator = validator;
             _updateValidator = updateValidator;
+            _createGroupValidator = createGroupValidator;
+            _updateGroupRequestValidator = updateGroupRequestValidator;
         }
 
         /// <summary>
@@ -39,6 +45,7 @@ namespace ProjectManagement.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreateBoardResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateBoard([FromBody] CreateBoardRequest request)
         {
             var result = await _validator.ValidateAsync(request);
@@ -75,13 +82,20 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/boards")]
         [HttpGet]
         [ProducesResponseType(typeof(GetAllBoardsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllBoards(
             [FromQuery] int page = 1,
             [FromQuery] int items = 10)
         {
             var boardResult = await _boardService.GetAllBoardsAsync(page, items);
 
-            return Ok(boardResult.Value);
+            return Ok(new GetAllBoardsResponse
+            { 
+                Page = boardResult.Value.Page,
+                Items = boardResult.Value.Items,
+                TotalCount = boardResult.Value.TotalCount,
+                Boards = [.. boardResult.Value.Boards]
+            });
         }
 
         /// <summary>
@@ -91,8 +105,9 @@ namespace ProjectManagement.Controllers
         /// <returns>A single board.</returns>
         [Route("/api/project-management/boards/{id}")]
         [HttpGet]
-        [ProducesResponseType(typeof(GetBoardByIdResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetBoardByIdWithGroupsAndCardsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetById(
             [FromRoute] Guid id)
         {
@@ -107,7 +122,10 @@ namespace ProjectManagement.Controllers
                         "Board can not be found.");
             }
 
-            return Ok(boardResult.Value);
+            return Ok(new GetBoardByIdWithGroupsAndCardsResponse
+            {
+                Board = boardResult.Value
+            });
         }
 
         /// <summary>
@@ -121,6 +139,7 @@ namespace ProjectManagement.Controllers
         [ProducesResponseType(typeof(UpdateBoardResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateBoard(
             [FromRoute] Guid id,
             [FromBody] UpdateBoardRequst request)
@@ -158,7 +177,10 @@ namespace ProjectManagement.Controllers
                 }
             }
 
-            return Ok(boardResult.Value);
+            return Ok(new UpdateBoardResponse
+            {
+                Board = boardResult.Value
+            });
         }
 
         /// <summary>
@@ -170,6 +192,7 @@ namespace ProjectManagement.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteBoardById(
             [FromRoute] Guid id)
         {
@@ -195,13 +218,25 @@ namespace ProjectManagement.Controllers
         /// <returns></returns>
         [Route("/api/project-management/boards/{id}/groups")]
         [HttpPost]
-        [ProducesResponseType(typeof(GetBoardByIdResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetBoardByIdWithGroupsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateGroup(
             [FromRoute] Guid id,
             [FromBody] CreateGroupRequest request)
         {
+            var result = await _createGroupValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return Problem(
+                    result.Errors.First().ErrorMessage,
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Group could not be added.");
+            }
+
             var boardResult = await _boardService.CreateGroupAsync(request.Title, id);
 
             if (boardResult.IsFailed)
@@ -224,7 +259,10 @@ namespace ProjectManagement.Controllers
                 }
             }
 
-            return Ok(boardResult.Value);
+            return Ok(new GetBoardByIdWithGroupsResponse
+            {
+                Board = boardResult.Value
+            });
         }
 
         /// <summary>
@@ -238,11 +276,23 @@ namespace ProjectManagement.Controllers
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateGroup(
             [FromRoute] Guid boardId,
             [FromRoute] Guid groupId,
             [FromBody] UpdateGroupRequest request)
         {
+            var result = await _updateGroupRequestValidator.ValidateAsync(request);
+
+            if (!result.IsValid)
+            {
+                return Problem(
+                    result.Errors.First().ErrorMessage,
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Group could not be updated.");
+            }
+
             var boardResult = await _boardService.UpdateGroupAsync(boardId, groupId, request.CurrentTitle, request.NewTitle);
 
             if (boardResult.IsFailed)
@@ -266,6 +316,7 @@ namespace ProjectManagement.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteGroup(
             [FromRoute] Guid boardId,
             [FromRoute] Guid groupId)

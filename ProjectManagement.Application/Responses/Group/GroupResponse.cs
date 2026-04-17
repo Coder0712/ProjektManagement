@@ -1,6 +1,4 @@
-﻿using ProjectManagement.Application.Responses.Card;
-
-namespace ProjectManagement.Application.Responses.Group
+﻿namespace ProjectManagement.Application.Responses.Group
 {
     /// <summary>
     /// Represents the group response.
@@ -21,11 +19,6 @@ namespace ProjectManagement.Application.Responses.Group
         /// Gets the board id.
         /// </summary>
         public Guid BoardId { get; init; }
-
-        /// <summary>
-        /// Gest the cards.
-        /// </summary>
-        public List<CardResponse> Cards { get; init; } = new();
 
         /// <summary>
         /// Gets the date and time when the object was created.

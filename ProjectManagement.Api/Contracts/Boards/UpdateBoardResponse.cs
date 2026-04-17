@@ -1,15 +1,15 @@
-﻿using ProjectManagement.Domain.Boards;
+﻿using ProjectManagement.Application.Responses.Board;
 
 namespace ProjectManagement.Api.Contracts.Boards
 {
     /// <summary>
-    /// Represents the response to update a kanban board.
+    /// Represents the response to update a board.
     /// </summary>
     public sealed record UpdateBoardResponse
     {
         /// <summary>
-        /// Gets or sets the kanban board.
+        /// Gets or sets the board.
         /// </summary>
-        public required Board KanbanBoard { get; set; }
+        public required BoardResponse Board { get; set; }
     }
 }

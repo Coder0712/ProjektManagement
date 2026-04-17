@@ -287,6 +287,15 @@ namespace ProjectManagement.Application.Services
                 return Result.Fail(ApplicationErrors.Board.GroupNotFound(groupId));
             }
 
+            if(group.Title != oldTitle)
+            {
+                _logger.LogWarning("Failed to update group with id {GroupId} for board with id {BoardId}. Old title does not match.",
+                    groupId,
+                    boardId);
+
+                return Result.Fail(ApplicationErrors.Board.GroupTitleMismatch(oldTitle));
+            }
+
             if(title is not null)
             {
                 var updateResult = board.UpdateGroup(oldTitle, title);

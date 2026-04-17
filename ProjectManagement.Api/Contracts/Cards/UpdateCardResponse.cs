@@ -10,6 +10,6 @@ namespace ProjectManagement.Api.Contracts.Cards
         /// <summary>
         /// Gets the updated card.
         /// </summary>
-        public required CardResponse Cards { get; set; }
+        public required CardResponse Card { get; set; }
     }
 }

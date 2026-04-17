@@ -35,7 +35,15 @@ namespace ProjectManagement.Application.Errors
             /// <param name="id">The project id.</param>
             /// <returns><see cref="Error"/>.</returns>
             public static Error ProjectAlreadyHasBoard(Guid projectid)
-                => new Error($"The project {projectid} already has a board.");
+                => new($"The project {projectid} already has a board.");
+
+            /// <summary>
+            /// Defines an error when the group title does not exist.
+            /// </summary>
+            /// <param name="id">The old group title.</param>
+            /// <returns><see cref="Error"/>.</returns>
+            public static Error GroupTitleMismatch(string title)
+                => new($"A group with the title {title} does not exist.");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using ProjectManagement.Domain.Boards;
+﻿using ProjectManagement.Application.Responses.Board;
 
 namespace ProjectManagement.Api.Contracts.Boards
 {
@@ -10,6 +10,6 @@ namespace ProjectManagement.Api.Contracts.Boards
         /// <summary>
         /// Gets or sets the board.
         /// </summary>
-        public required Board Board { get; set; }
+        public required BoardResponse Board { get; set; }
     }
 }

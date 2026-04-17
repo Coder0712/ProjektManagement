@@ -1,4 +1,4 @@
-﻿using ProjectManagement.Domain.Projects;
+﻿using ProjectManagement.Application.Responses.Project;
 
 namespace ProjectManagement.Api.Contracts.Projects
 {
@@ -10,6 +10,6 @@ namespace ProjectManagement.Api.Contracts.Projects
         /// <summary>
         /// Gets or sets the project.
         /// </summary>
-        public required Project Project { get; set; }
+        public required ProjectResponse Project { get; set; }
     }
 }

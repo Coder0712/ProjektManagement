@@ -42,6 +42,7 @@ namespace ProjectManagement.Controllers
         [ProducesResponseType(typeof(CreateProjectResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest request)
         {
             var result = await this._createValidator.ValidateAsync(request);
@@ -82,6 +83,7 @@ namespace ProjectManagement.Controllers
         [Route("/api/project-management/projects")]
         [HttpGet]
         [ProducesResponseType(typeof(GetAllProjectsResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll(
             [FromQuery] int page = 1,
             [FromQuery] int items = 10)
@@ -120,6 +122,7 @@ namespace ProjectManagement.Controllers
         [ProducesResponseType(typeof(GetProjectByIdResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var projectResult = await this._projectService.GetProjectByIdAsync(id);
@@ -133,7 +136,10 @@ namespace ProjectManagement.Controllers
                         "Project could not be found.");
             }
 
-            return Ok(projectResult.Value);
+            return Ok(new GetProjectByIdResponse
+            {
+                Project = projectResult.Value
+            });
         }
 
         /// <summary>
@@ -148,6 +154,7 @@ namespace ProjectManagement.Controllers
         [ProducesResponseType(typeof(UpdateProjectResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateProject(Guid id, [FromBody] UpdateProjectRequest request)
         {
             var result = await this._updateValidator.ValidateAsync(request);
@@ -185,8 +192,11 @@ namespace ProjectManagement.Controllers
                 }
             }
 
-            return Ok(projectResult.Value);
-        }        
+            return Ok(new UpdateProjectResponse
+            {
+                Project = projectResult.Value
+            });
+        }
 
         /// <summary>
         /// Deletes a project by the id.
@@ -198,6 +208,7 @@ namespace ProjectManagement.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteProject(Guid id)
         {
             var projectResult = await this._projectService.DeleteProjectAsync(id);

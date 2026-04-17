@@ -20,7 +20,7 @@ namespace ProjectManagement.Api.Validators
 
             RuleFor(r => r.Title)
                 .NotEmpty()
-                .WithMessage("Title is empty.")
+                .When(r => r.Title is not null)
                 .MaximumLength(255)
                 .WithMessage("Title is too long.");
         }
