@@ -25,8 +25,11 @@ namespace ProjectManagement.Application.Services
         /// <summary>
         /// Initialize a new object of type <see cref="BoardService"/>.
         /// </summary>
-        /// <param name="repository">The board repository.</param>
-        /// <param name="dbContext">The db context.</param>
+        /// <param name="cardRepository"><see cref="ICardRepository"/>.</param>
+        /// <param name="repository"><see cref="IBoardRepository"/></param>
+        /// <param name="boardProjectUniquessChecker"><see cref="IBoardProjectUniquessChecker"/>>.</param>
+        /// <param name="logger"><see cref="ILogger"/>.</param>
+        /// <param name="dbContext"><see cref="IDbContext"/>.</param>
         public BoardService(
             ICardRepository cardRepository,
             IBoardRepository repository,

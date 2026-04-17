@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.HttpLogging;
+using ProjectManagement.Api.Middleware;
 using ProjectManagement.Api.Validators;
 using ProjectManagement.Infrastructure.Options;
 using System.Text.Json.Serialization;
@@ -77,6 +78,7 @@ namespace ProjectManagement.Api
                     | HttpLoggingFields.ResponseStatusCode
                     | HttpLoggingFields.Duration;
             });
+            services.AddExceptionHandler<GlobalExceptionHandler>();
 
             return services;
         }

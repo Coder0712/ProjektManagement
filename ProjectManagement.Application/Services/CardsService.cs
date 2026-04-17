@@ -18,6 +18,12 @@ namespace ProjectManagement.Application.Services
         private readonly ILogger<CardService> _logger;
         private readonly IDbContext _dbContext;
 
+        /// <summary>
+        /// Initialize a new object of type <see cref="CardService"/>.
+        /// </summary>
+        /// <param name="cardRepository"><see cref="ICardRepository"/>.</param>
+        /// <param name="logger"><see cref="ILogger"/>.</param>
+        /// <param name="dbContext"><see cref="IDbContext"/>.</param>
         public CardService(
             ICardRepository cardRepository,
             ILogger<CardService> logger,
@@ -28,6 +34,7 @@ namespace ProjectManagement.Application.Services
             _dbContext = dbContext;
         }
 
+        /// <inheritdoc/> 
         public async Task<Result<CardResponse>> Create(
             string title,
             string? description,
@@ -60,6 +67,7 @@ namespace ProjectManagement.Application.Services
             return MapToResponse(cardResult.Value);
         }
 
+        /// <inheritdoc/> 
         public async Task<Result<CardResponse>> UpdateCard(
             Guid cardId,
             string? title,
@@ -142,6 +150,7 @@ namespace ProjectManagement.Application.Services
             return Result.Ok(MapToResponse(card));
         }
 
+        /// <inheritdoc/> 
         public async Task<Result> DeleteCard(Guid cardId, CancellationToken cancellationToken = default)
         {
             var card = await _cardRepository.GetCardByIdAsync(cardId);
@@ -162,6 +171,7 @@ namespace ProjectManagement.Application.Services
             return Result.Ok();
         }
 
+        /// <inheritdoc/> 
         public async Task<Result<List<CardResponse>>> GetAllCardsAsync()
         {
             var cards = await _cardRepository.GetAllAsync();
@@ -183,6 +193,7 @@ namespace ProjectManagement.Application.Services
             return Result.Ok(cardQueryResults.Select(MapToResponse).ToList());
         }
 
+        /// <inheritdoc/> 
         public async Task<Result<CardResponse>> GetCardbyIdAsync(Guid id)
         {
             var result = await _cardRepository.GetByIdAsync(id);
@@ -199,6 +210,7 @@ namespace ProjectManagement.Application.Services
             return Result.Ok(MapToResponse(result));
         }
 
+        /// <inheritdoc/> 
         public async Task<Result> MoveCard(Guid boardId, Guid newGroupId, Guid cardId)
         {
             var cards = await _cardRepository.GetAllAsync();

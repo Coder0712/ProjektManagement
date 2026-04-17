@@ -24,6 +24,8 @@ namespace ProjectManagement.Application.Services
         /// Initialize a new object of type <see cref="ProjectService"/>.
         /// </summary>
         /// <param name="repository">The project repository.</param>
+        /// <param name="projectTitleUniquenessChecker"><see cref="IProjectTitleUniquenessChecker"/>.</param>
+        /// <param name="logger"><see cref="ILogger"/>.</param>
         /// <param name="dbContext">The db context.</param>
         public ProjectService(
             IProjectRepository repository,

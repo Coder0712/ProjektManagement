@@ -27,6 +27,8 @@ app.MapScalarApiReference();
 
 //app.UseHttpsRedirection();
 
+app.UseExceptionHandler();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
