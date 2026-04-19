@@ -67,6 +67,11 @@ namespace ProjectManagement.Domain.Boards
                 return Result.Fail(GroupErrors.TitleIsEmpty());
             }
 
+            if (title.Length > 255)
+            {
+                return Result.Fail(GroupErrors.TitleIsTooLong());
+            }
+
             if(boardId == Guid.Empty)
             {
                 return Result.Fail(GroupErrors.BoardIdIsEmpty());
@@ -90,6 +95,11 @@ namespace ProjectManagement.Domain.Boards
             if (string.IsNullOrWhiteSpace(title))
             {
                 return Result.Fail(GroupErrors.TitleIsEmpty());
+            }
+
+            if (title.Length > 255)
+            {
+                return Result.Fail(GroupErrors.TitleIsTooLong());
             }
 
             this.Title = title;

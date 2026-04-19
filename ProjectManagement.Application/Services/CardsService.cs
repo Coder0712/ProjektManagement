@@ -129,7 +129,7 @@ namespace ProjectManagement.Application.Services
 
             if (status is not null)
             {
-                var result = card.UpdateStatus(status);
+                var result = card.UpdateStatus(status.Value);
 
                 if (result.IsFailed)
                 {

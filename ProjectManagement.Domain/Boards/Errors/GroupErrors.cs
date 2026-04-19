@@ -23,6 +23,13 @@ namespace ProjectManagement.Domain.Boards.Errors
             => new("Group title is empty.");
 
         /// <summary>
+        /// Defines an error when the title is too long.
+        /// </summary>
+        /// <returns><see cref="Error"/>.</returns>
+        public static Error TitleIsTooLong()
+            => new("Title is too long.");
+
+        /// <summary>
         /// Defines an error when the board id is empty.
         /// </summary>
         /// <returns><see cref="Error"/>.</returns>

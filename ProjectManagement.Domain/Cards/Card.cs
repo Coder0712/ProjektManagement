@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using ProjectManagement.Domain.Boards.Errors;
 using ProjectManagement.Domain.Common;
 
 namespace ProjectManagement.Domain.Cards
@@ -58,7 +59,7 @@ namespace ProjectManagement.Domain.Cards
         /// <summary>
         /// The status.
         /// </summary>
-        public CardStatus? Status { get; private set; }
+        public CardStatus Status { get; private set; }
 
         public int Position { get; private set; }
 
@@ -95,6 +96,21 @@ namespace ProjectManagement.Domain.Cards
                 return Result.Fail(CardErrors.TitleIsEmpty());
             }
 
+            if (title.Length > 255)
+            {
+                return Result.Fail(CardErrors.TitleIsTooLong());
+            }
+
+            if (description is not null && description.Length > 2000)
+            {
+                return Result.Fail(CardErrors.DescriptionIsTooLong());
+            }
+
+            if (effort < 0 || effort > 999)
+            {
+                return Result.Fail(CardErrors.EffortIsInvalid());
+            }
+
             return Result.Ok(new Card()
             {
                 Id = Guid.NewGuid(),
@@ -119,6 +135,11 @@ namespace ProjectManagement.Domain.Cards
                 return Result.Fail(CardErrors.TitleIsEmpty());
             }
 
+            if (title.Length > 255)
+            {
+                return Result.Fail(CardErrors.TitleIsTooLong());
+            }
+
             this.Title = title;
 
             return Result.Ok(this);
@@ -134,6 +155,11 @@ namespace ProjectManagement.Domain.Cards
                 return Result.Fail(CardErrors.DescriptionIsEmpty());
             }
 
+            if (description is not null && description.Length > 1000)
+            {
+                return Result.Fail(CardErrors.DescriptionIsTooLong());
+            }
+
             this.Description = description;
             return this;
         }
@@ -143,6 +169,11 @@ namespace ProjectManagement.Domain.Cards
         /// </summary>
         public Result<Card> UpdateEffort(int effort)
         {
+            if(effort < 0 || effort > 999)
+            {
+                return Result.Fail(CardErrors.EffortIsInvalid());
+            }
+
             this.Effort = effort;
 
             return Result.Ok(this);
@@ -151,7 +182,7 @@ namespace ProjectManagement.Domain.Cards
         /// <summary>
         /// Updates the status of the card.
         /// </summary>
-        public Result<Card> UpdateStatus(CardStatus? status)
+        public Result<Card> UpdateStatus(CardStatus status)
         {
             this.Status = status;
 
@@ -166,6 +197,11 @@ namespace ProjectManagement.Domain.Cards
         /// <returns></returns>
         public Result MoveCard(Guid newGroupId, int newPosition)
         {
+            if(newPosition < 0)
+            {
+                return Result.Fail(CardErrors.PositionIsNegative());
+            }
+
             if (newGroupId == Guid.Empty)
             {
                 return Result.Fail(CardErrors.GroupIdIsEmpty());

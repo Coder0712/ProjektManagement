@@ -15,6 +15,13 @@ namespace ProjectManagement.Domain.Cards
             => new("The title is empty.");
 
         /// <summary>
+        /// Defines an error when the card title is too long.
+        /// </summary>
+        /// <returns><see cref="Error"/>.</returns>
+        public static Error TitleIsTooLong() 
+            => new("The title is too long.");
+
+        /// <summary>
         /// Defines an error when the description is empty.
         /// </summary>
         /// <returns><see cref="Error"/>.</returns>
@@ -22,18 +29,25 @@ namespace ProjectManagement.Domain.Cards
             => new("Description is empty");
 
         /// <summary>
-        /// Defines an error when the status is empty.
+        /// Defines an error when the description is too long.
         /// </summary>
         /// <returns><see cref="Error"/>.</returns>
-        public static Error StatusIsEmpty()
-            => new("The status is empty.");
+        public static Error DescriptionIsTooLong()
+            => new("The description is too long.");
 
         /// <summary>
-        /// Defines an error when the effort is empty.
+        /// Defines an error when the effort is less than 0.
         /// </summary>
         /// <returns><see cref="Error"/>.</returns>
-        public static Error EffortIsEmpty()
-            => new("The effort is empty.");
+        public static Error EffortIsInvalid()
+            => new("Effort has an invalid value.");
+
+        /// <summary>
+        /// Defines an error when the position is less than 0.
+        /// </summary>
+        /// <returns><see cref="Error"/>.</returns>
+        public static Error PositionIsNegative()
+            => new("Position is negative"); 
 
         /// <summary>
         /// Defines an error when the group id is empty.

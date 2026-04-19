@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using static System.Net.WebRequestMethods;
 
 namespace ProjectManagement.Domain.Boards.Errors
 {
@@ -13,6 +14,13 @@ namespace ProjectManagement.Domain.Boards.Errors
         /// <returns><see cref="Error"/>.</returns>
         public static Error TitleIsEmpty()
             => new("Board title is empty.");
+
+        /// <summary>
+        /// Defines an error when the board title is too long.
+        /// </summary>
+        /// <returns><see cref="Error"/>.</returns>
+        public static Error TitleIsTooLong()
+            => new("Title is too long.");
 
         /// <summary>
         /// Defines an error when the project id is empty.

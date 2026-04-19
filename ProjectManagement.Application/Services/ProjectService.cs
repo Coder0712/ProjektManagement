@@ -116,7 +116,9 @@ namespace ProjectManagement.Application.Services
 
             if (status is not null)
             {
-                var updateResult = project.UpdateStatus(status);
+                ProjectStatus statusValue = status.Value;
+
+                var updateResult = project.UpdateStatus(statusValue);
 
                 if (updateResult.IsFailed)
                 {

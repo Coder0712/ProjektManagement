@@ -22,10 +22,24 @@ namespace ProjectManagement.Domain.Projects.Errors
             => new("Project name is empty.");
 
         /// <summary>
+        /// Defines an error when the project title is too long.
+        /// </summary>
+        /// <returns><see cref="Error"/>.</returns>
+        public static Error TitleIsTooLong()
+            => new("Project name is too long.");
+
+        /// <summary>
         /// Defines an error when the description is empty.
         /// </summary>
         /// <returns><see cref="Error"/>.</returns>
         public static Error DescriptionIsEmpty()
             => new("Description is empty.");
+
+        /// <summary>
+        /// Defines an error when the description is too long.
+        /// </summary>
+        /// <returns><see cref="Error"/>.</returns>
+        public static Error DescriptionIsTooLong()
+            => new("Description is too long.");
     }
 }

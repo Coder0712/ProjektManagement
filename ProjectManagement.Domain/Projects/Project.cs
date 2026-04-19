@@ -50,7 +50,7 @@ namespace ProjectManagement.Domain.Projects
         /// <summary>
         /// Gets the status.
         /// </summary>
-        public ProjectStatus? Status { get; private set; }
+        public ProjectStatus Status { get; private set; }
 
         public Board Board { get; init; }
 
@@ -79,9 +79,19 @@ namespace ProjectManagement.Domain.Projects
                 return Result.Fail<Project>(ProjectErrors.TitleIsEmpty());
             }
 
+            if (name.Length > 255)
+            {
+                return Result.Fail<Project>(ProjectErrors.TitleIsTooLong());
+            }
+
             if (string.IsNullOrWhiteSpace(description))
             {
                 return Result.Fail<Project>(ProjectErrors.DescriptionIsEmpty());
+            }
+
+            if (description.Length > 1000)
+            {
+                return Result.Fail<Project>(ProjectErrors.DescriptionIsTooLong());
             }
 
             var hasTitle = await checker.ProjectAlreadyHasTitle(name);
@@ -112,6 +122,11 @@ namespace ProjectManagement.Domain.Projects
                 return Result.Fail<Project>(ProjectErrors.TitleIsEmpty());
             }
 
+            if (name.Length > 255)
+            {
+                return Result.Fail<Project>(ProjectErrors.TitleIsTooLong());
+            }
+
             this.Name = name;
             return this;
         }
@@ -128,6 +143,11 @@ namespace ProjectManagement.Domain.Projects
                 return Result.Fail<Project>(ProjectErrors.DescriptionIsEmpty());
             }
 
+            if (description.Length > 1000)
+            {
+                return Result.Fail<Project>(ProjectErrors.DescriptionIsTooLong());
+            }
+
             this.Description = description;
             return this;
         }
@@ -137,7 +157,7 @@ namespace ProjectManagement.Domain.Projects
         /// </summary>
         /// <param name="name">The new status.</param>
         /// <returns>The updated project.</returns>
-        public Result<Project> UpdateStatus(ProjectStatus? status)
+        public Result<Project> UpdateStatus(ProjectStatus status)
         {
             this.Status = status;
 

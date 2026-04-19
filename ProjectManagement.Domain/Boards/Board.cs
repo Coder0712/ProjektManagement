@@ -79,6 +79,11 @@ namespace ProjectManagement.Domain.Boards
                 return Result.Fail(BoardErrors.TitleIsEmpty());
             }
 
+            if(title.Length > 255)
+            {
+                return Result.Fail(BoardErrors.TitleIsTooLong());
+            }
+
             if (projectId == Guid.Empty)
             {
                 return Result.Fail(BoardErrors.ProjectIdIsEmpty());
@@ -109,6 +114,11 @@ namespace ProjectManagement.Domain.Boards
             if (string.IsNullOrWhiteSpace(title))
             {
                 return Result.Fail(BoardErrors.TitleIsEmpty());
+            }
+
+            if (title.Length > 255)
+            {
+                return Result.Fail(BoardErrors.TitleIsTooLong());
             }
 
             this.Title = title;
@@ -155,7 +165,12 @@ namespace ProjectManagement.Domain.Boards
                 return Result.Fail(GroupErrors.GroupNotFound());
             }
 
-            if (this._groups.Any(g => g.Title == title))
+            if(title is null)
+            {
+                return Result.Ok(this);
+            }
+
+            if (this._groups.Any(g => g.Title == title && g != group))
             {
                 return Result.Fail(GroupErrors.GroupTitleAlreadyExists());
             }
@@ -173,11 +188,6 @@ namespace ProjectManagement.Domain.Boards
         /// <exception cref="Exception">If the group has cards.</exception>
         public Result<Board> RemoveGroup(Group group)
         {
-            if(group is null)
-            {
-                return Result.Fail(GroupErrors.GroupNotFound());
-            }
-
             if (!_groups.Contains(group))
             {
                 return Result.Fail(GroupErrors.GroupNotFound());
